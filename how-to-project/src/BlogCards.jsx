@@ -212,13 +212,13 @@ export default function BlogCard() {
         <Typography gutterBottom variant="h5" component="div" color={"white"}>
         <Link color="white" to={`/article/${id}`}>{Title}</Link>
         </Typography>
-        <Typography variant="body2" color="white">
+        {/* <Typography variant="body2" color="white">
           Author: {author.name}
         </Typography>
         <Typography variant="body2" color="white">
           Field: {Topic}
         </Typography>
-        
+         */}
       </CardContent>
       
       <CardActions>

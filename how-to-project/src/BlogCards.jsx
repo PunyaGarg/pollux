@@ -209,8 +209,9 @@ export default function BlogCard() {
       <CardMedia component="img" height="150px" image={`${imgURL}`} alt="media" />
       
       <CardContent>
-        <Typography gutterBottom variant="h5" component="div" color={"white"}>
+        <Typography gutterBottom variant="h5" component="div" color={"white"} font-family = { "Playsans-serif"} >
         <Link color="white" to={`/article/${id}`}>{Title}</Link>
+        
         </Typography>
         {/* <Typography variant="body2" color="white">
           Author: {author.name}

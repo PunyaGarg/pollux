@@ -6,7 +6,8 @@ import ResearchPaper from "../Elements/ResearchPaper"
 import { Typography } from "@mui/material";
 import Box from '@mui/material/Box';
 import useAuthState from "../Firebase/hooks";
-import { auth } from "../Firebase/firebase";
+import { collection, query, where ,onSnapshot,arrayUnion,arrayRemove,doc,updateDoc,addDoc} from "firebase/firestore";
+import { auth, db } from "../Firebase/firebase";
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -52,54 +53,146 @@ function a11yProps(index) {
 function SearchPage() {
   const {user}=useAuthState(auth);
   const[value,setValue] = useState(0);
+  const [category, setCategory] = useState('Blog');
+  const [searchInput, setSearchInput] = useState("");
+  const [blogs,setBlogs]=useState([]);
+  const [researchPaper, setResearchPaper] = useState([]);
+  const [placementStories , setPlacementStories] = useState([]);
+  
+  const [updated, setUpdated] = useState('');
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+
+ const searchBlog = async () => {
+   const articleRef=collection(db,"Admin")
+
+     var q;
+     if(searchInput.length > 0){
+       q = q=query(articleRef,where('status',"==",true),where('category',"==","Blogs"), where("tags", "array-contains" , searchInput.toLowerCase()));
+     }
+     else {
+      q = query(articleRef,where('status',"==",true),where('category',"==","Blogs"));
+     }
+
+     console.log(q);
+     onSnapshot(q,(snapshot)=>{
+       const blog = snapshot.docs.map((doc)=>({
+         id:doc.id,
+         ...doc.data(),
+       }));
+       setBlogs(blog);
+       console.log(blog);
+    });
+ };
+
+ const searchResearchPaper = async () => {
+  const articleRef=collection(db,"Admin")
+
+    var q;
+    if(searchInput.length > 0){
+      q = q=query(articleRef,where('status',"==",true),where('category',"==","Research Paper"), where("tags", "array-contains" , searchInput.toLowerCase()));
+    }
+    else {
+     q = query(articleRef,where('status',"==",true),where('category',"==","Research Paper"));
+    }
+
+    console.log(q);
+    onSnapshot(q,(snapshot)=>{
+      const research_paper = snapshot.docs.map((doc)=>({
+        id:doc.id,
+        ...doc.data(),
+      }));
+      setResearchPaper(research_paper);
+      console.log(research_paper);
+   });
+};
+
+const searchPlacementStories = async () => {
+  const articleRef=collection(db,"Admin")
+
+    var q;
+    if(searchInput.length > 0){
+      q = q=query(articleRef,where('status',"==",true),where('category',"==","Technical Stuff"), where("tags", "array-contains" , searchInput.toLowerCase()));
+    }
+    else {
+     q = query(articleRef,where('status',"==",true),where('category',"==","Technical Stuff"));
+    }
+
+    console.log(q);
+    onSnapshot(q,(snapshot)=>{
+      const placement_stories = snapshot.docs.map((doc)=>({
+        id:doc.id,
+        ...doc.data(),
+      }));
+      setPlacementStories(placement_stories);
+      console.log(placement_stories);
+   });
+};
+
+ const handleKeyDown = (event) => {
+   if (event.key === 'Enter') {
+     setUpdated(searchInput);
+
+     if(category==='Blog')
+       searchBlog();
+     else if(category==='ResearchPaper')
+       searchResearchPaper();
+
+      else searchPlacementStories();
+   }
+ };
+
   return (
     <>
       <Navbar/>
-      {/* SEARCH BAR 
-      <div>
-        <input 
-          class="search-bar"
-          type="search"
-          placeholder="Search for Blogs , Technical writing or Research Paper "
-          id="searchInput"
-      />
-      <Button class="search-icon" ><i class="fa-solid fa-magnifying-glass"></i></Button>
 
-      </div>*/}
+      <input
+            class="search-bar searchpage"
+            type="search"
+            placeholder="Search blogs by name , field of study or author name"
+            id="searchInput"
+          onChange={(e)=>{setSearchInput(e.target.value);}}
+          onKeyDown = {handleKeyDown}
+          value={searchInput}
+        ></input>
+
+        {
+          (category==='Blog')? <button class="search-icon" type="submit" onClick={searchBlog}><i class="fa-solid fa-magnifying-glass"></i></button>
+                    : (category==='ResearchPaper') ? <button class="search-icon" type="submit" onClick={searchResearchPaper}><i class="fa-solid fa-magnifying-glass"></i></button>
+                                                   : <button class="search-icon" type="submit" onClick={searchPlacementStories}><i class="fa-solid fa-magnifying-glass"></i></button>
+        }
+        
+
 
       <div style={{marginLeft: '5%', marginRight: '5%'}}>
         
-      {/* <Avatar
-  alt="Remy Sharp"
-  src={user.photoURL}
-  sx={{ width: 126, height: 126 ,marginLeft:80}}
-/> 
- <Typography variant="h4" align="center" sx={{color:"white", margin:2}}>{user.displayName}</Typography> */}
 <Box
     sx={{
         width: '100%',
-        marginLeft:1,
+        marginLeft:'2%',
       }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
+        
+      <Box className="blogreseach" x={{ borderBottom: 1, borderColor: 'divider' 
+                                }} >
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" textColor="white"
             indicatorColor="secondary"
-            sx={{marginLeft:33 , color:"white" , paddingLeft:9 , marginTop:20 }}>
-          <Tab sx={{marginRight:3 , fontSize:22}} label="BLOGS" {...a11yProps(0)} />
-          <Tab sx={{marginRight:3 , fontSize:22}} label="RESEARCH PAPER"{...a11yProps(1)} />
-          <Tab sx={{marginRight:3 , fontSize:22}} label="PLACEMENT STORIES" {...a11yProps(2)} />
+            sx={{marginLeft:'20%' , color:"white" ,  marginTop:20 }}>
+          <Tab sx={{marginRight:'3%' ,display: 'block', fontSize:22}} label="BLOGS" {...a11yProps(0)} onClick={()=> {setCategory('Blog')}}/>
+          <Tab sx={{marginRight:'3%', display: 'block',fontSize:22}} label="RESEARCH PAPER"{...a11yProps(1)} onClick={()=> {setCategory('ResearchPaper')}}/>
+          <Tab sx={{marginRight:'3%', display: 'block',fontSize:22}} label="PLACEMENT STORIES" {...a11yProps(2)} onClick={()=> {setCategory('PlacementStories')}}/>
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-          <Blogs/>
+          <Blogs articles={blogs} setArticles={setBlogs}/>
       </TabPanel>
       <TabPanel value={value} index={1}>
-          <ResearchPaper/>
+          <ResearchPaper articles={researchPaper} setArticles={setResearchPaper}/>
       </TabPanel>
       <TabPanel value={value} index={2}>
-         <Tech/>
+         <Tech articles={placementStories} setArticles={setPlacementStories}/>
       </TabPanel>
     </Box>
 </div>

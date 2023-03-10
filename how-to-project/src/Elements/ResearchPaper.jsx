@@ -79,7 +79,7 @@ function LikeArticle({id,likes}){
       </div>
   )
 }
-export default function BlogCard() { 
+export default function BlogCard({articles, setArticles}) { 
    // const classes = useStyles();
    const [searchInput, setSearchInput] = useState("");
    const [searchAuthor, setSearchAuthor] = useState("");
@@ -102,43 +102,8 @@ export default function BlogCard() {
     setCat("");
 }}
 
-   const [articles,setArticles]=useState([]);
+  //  const [articles,setArticles]=useState([]);
    const {user} = useAuthState(auth);
-
-  const searchBlog = async () => {
-    const articleRef=collection(db,"Admin")
-
-      var q;
-      if(searchInput.length > 0 && searchAuthor.length > 0){
-        q = query(articleRef, where("tags", "array-contains" , searchInput.toLowerCase()), where('author.name', "==" , searchAuthor));
-      }
-      else if(searchInput.length > 0){
-        q = query(articleRef, where("tags", "array-contains" , searchInput.toLowerCase()));
-      }
-      else if(searchAuthor.length > 0){
-        q = query(articleRef, where('author.name', "==" , searchAuthor));
-      }
-      else {
-        q= query(articleRef);
-      }
-
-      console.log(q);
-      onSnapshot(q,(snapshot)=>{
-        const articles = snapshot.docs.map((doc)=>({
-          id:doc.id,
-          ...doc.data(),
-        }));
-        setArticles(articles);
-        console.log(articles);
-     });
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      setUpdated(searchInput);
-      searchBlog();
-    }
-  };
 
 
   
@@ -157,24 +122,6 @@ export default function BlogCard() {
 
   return (
   <>
-    <div class="searchCont">
-
-        {/* <div>
-
-        <input
-          class="search-bar"
-          type="text"
-          placeholder="Search by Author Name..."
-          id="searchBar1"
-          onChange={(e)=>{setSearchAuthor(e.target.value);}}
-          onKeyDown = {(e) => {if (e.key === 'Enter') {
-            searchBlog();
-          }}}
-          value={searchAuthor}
-        ></input>
-        <button class="search-icon" type="submit" onClick={searchBlog}><i class="fas fa-search"></i></button>
-        </div> */}
-    </div>
 
     <div>
              {
@@ -184,18 +131,14 @@ export default function BlogCard() {
 
     articles.map(({id,Title,Topic,likes,imgURL,author,link})=><div class="ApproveCard" key={id}>
 
-    <Card class="cards"
-      // sx={{
-      //  maxWidth: 345,
-      //   backgroundColor: "rgb(70, 43, 136, 0.4)",
-      //   color: "white",
-      // }}
+<Card className={"cards"}
+      sx = {{ background: `linear-gradient(rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.20)), url(${imgURL}) no-repeat center`}}
     >
-      <CardMedia component="img" height="140" image={`${imgURL}`} alt="media" />
+      {/* <CardMedia component="img" height="140" image={`${imgURL}`} alt="media" /> */}
       
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-        <Link to={`/article/${id}`}>{Title}</Link>
+        <Link class="blogCard-title" to={`/article/${id}`}>{Title}</Link>
         </Typography>
         <Typography variant="body2" color="white">
           Author: {author.name}
@@ -220,7 +163,7 @@ export default function BlogCard() {
             <p>{likes?<span>{likes.length}</span>:""}</p></div>
 
           <TransitionModal title="Comment section" 
-          button={<i class="fas fa-2x fa-comments"></i>}
+          button={<i class="fas fa-2x fa-comments blogAction-icon"></i>}
           content="Unleash the power of words. Spark discussion, share your insights.">             
 
               <Comment id={id} currentlyLoggedInUser={user}/>
@@ -231,7 +174,7 @@ export default function BlogCard() {
         
           <TransitionModal 
             title="Share"
-            button={<i class='fas fa-2x fa-share'></i>}
+            button={<i class='fas fa-2x fa-share blogAction-icon'></i>}
             content="Inspire others to explore tech, share the content."
             >
               <FacebookShareButton
@@ -255,7 +198,7 @@ export default function BlogCard() {
                          
            <TransitionModal 
            title="Report content ?" 
-           button={<i class="fa-solid fa-2x fa-circle-exclamation"></i> } 
+           button={<i class="fa-solid fa-2x fa-circle-exclamation blogAction-icon"></i> } 
            content="Inappropriate content on the website can be reported and removed soon ">
           <FormControl>
       <RadioGroup

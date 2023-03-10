@@ -537,11 +537,14 @@ border-radius: 5px;
 .search-bar:hover{
   box-shadow: 1px 1px 20px white;
 }
+.blogreseach{
+  margin-left:5%;
+}
 
 .search-icon{
-    position: relative;
-    left: 990px;
-    top:65px;
+    position: absolute;
+    left: 67%;
+    top:205px;
     background: top;
     border: none;
     color: white;
@@ -555,18 +558,18 @@ border-radius: 5px;
     width:90%;
     left: 2%;
   }
-  /* .search-icon{
-    left:540px;
-  } */
+  .search-icon{
+    margin-left:50%;
+  }
 }
 
 @media screen and (min-width:412px) and (max-width: 750px){
   .search-bar{
-    width:90%;
+    width:50%;
     left: 10%;
   }
   .search-icon{
-    left:540px;
+    margin-left:  90%;
   }
 }
 
@@ -575,9 +578,9 @@ border-radius: 5px;
     width:50%;
     left: 20%;
   }
-  .search-icon{
-    left:540px;
-  }
+   .search-icon{
+    margin-left:90%;
+  } 
 }
 /* #searchBar {
   width: 400px;
@@ -593,8 +596,8 @@ border-radius: 5px;
   box-sizing: border-box;
 top:300px;
 left:220px;
-width: 345px;
-height: 380px;
+width: 380px;
+/* height: 380px; */
 padding:10px;
 background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(28, 26, 26, 0.81) 90.61%);
 border: 1px solid #FFFFFF;
